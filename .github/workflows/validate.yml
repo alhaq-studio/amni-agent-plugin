@@ -1,0 +1,32 @@
+name: Validate Plugin & Guardrails
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Verify Zero-Emoji Compliance
+        run: |
+          python hooks/scripts/check_no_emojis.py .
+
+      - name: Verify Single-Source ViewModel Hooks
+        run: |
+          python hooks/scripts/verify_flavor_sources.py .
+
+      - name: Validate Manifest JSON Formats
+        run: |
+          python -c "import json; [json.load(open(f)) for f in ['plugin.json', 'mcp_config.json', 'hooks.json', '.claude-plugin/plugin.json', '.claude-plugin/mcp.json', '.claude-plugin/hooks.json']]"
+          echo "[OK] All manifest JSON files are valid"

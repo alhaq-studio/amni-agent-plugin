@@ -1,0 +1,53 @@
+{
+  "amni-zero-emoji-check": {
+    "PostToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python hooks/scripts/check_no_emojis.py --hook",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python hooks/scripts/check_no_emojis.py --hook --stop-check",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  },
+  "amni-single-source-viewmodel-check": {
+    "PostToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python hooks/scripts/verify_flavor_sources.py --hook",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python hooks/scripts/verify_flavor_sources.py --hook --stop-check",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
+

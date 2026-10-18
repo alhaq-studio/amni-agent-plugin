@@ -1,0 +1,39 @@
+{
+  "name": "amni-ecosystem",
+  "displayName": "Amni Ecosystem Master Plugin",
+  "version": "1.0.0",
+  "description": "Unified architecture, deterministic lifecycle guardrails, zero-emoji enforcement, and specialized skills for the Amni Product Family (AmniShield, AmniBlur, AmniQuest).",
+  "author": {
+    "name": "Alhaq Studio",
+    "url": "https://github.com/alhaq-studio"
+  },
+  "homepage": "https://github.com/alhaq-studio",
+  "repository": "https://github.com/alhaq-studio/amni-agent-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "amni",
+    "amnishield",
+    "amniblur",
+    "amniquest",
+    "privacy",
+    "on-device-ai",
+    "onnx",
+    "android",
+    "zero-knowledge",
+    "guardrails"
+  ],
+  "skills": [
+    "skills/android-local-ai-onnx",
+    "skills/android-fullstack-dev",
+    "skills/security-compliance",
+    "skills/stripe-payments",
+    "skills/supabase-backend",
+    "skills/marketing-growth"
+  ],
+  "agents": [
+    "agents/amni-architect.md",
+    "agents/fork-diff-auditor.md"
+  ],
+  "hooks": "hooks.json"
+}
+

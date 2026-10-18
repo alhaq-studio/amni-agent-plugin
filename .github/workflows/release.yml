@@ -1,0 +1,39 @@
+name: Release Plugin
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Verify Zero-Emoji Invariant Before Release
+        run: |
+          python hooks/scripts/check_no_emojis.py .
+
+      - name: Bundle Plugin Artifacts
+        run: |
+          tar -czf amni-ecosystem.tar.gz --exclude='.git' --exclude='.github' *
+          zip -r amni-ecosystem.zip . -x '*.git*' -x '*.github*'
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            amni-ecosystem.tar.gz
+            amni-ecosystem.zip
+          generate_release_notes: true
+          draft: false
+          prerelease: false

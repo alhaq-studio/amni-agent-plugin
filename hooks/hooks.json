@@ -1,0 +1,35 @@
+{
+  "description": "Amni Ecosystem lifecycle guardrails: deterministic zero-emoji enforcement and single-source ViewModel validation.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content|Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/check_no_emojis.py\" --hook"
+          },
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/verify_flavor_sources.py\" --hook"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/check_no_emojis.py\" --hook --stop-check"
+          },
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/verify_flavor_sources.py\" --hook --stop-check"
+          }
+        ]
+      }
+    ]
+  }
+}
+
