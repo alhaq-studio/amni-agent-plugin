@@ -24,6 +24,7 @@
   ],
   "skills": [
     "skills/android-local-ai-onnx",
+    "skills/android-local-llm-dev",
     "skills/android-fullstack-dev",
     "skills/security-compliance",
     "skills/stripe-payments",
