@@ -22,7 +22,13 @@ SigLIP 2 computes joint embeddings between an input image and target text prompt
 1. **Image Preprocessing**: Convert CameraX hardware bitmap to software `ARGB_8888`, scale to model input resolution (e.g. 224x224), normalize channels into a direct NIO `FloatBuffer`.
 2. **Text Tokenization**: Pass prompt strings through native C++ SentencePiece JNI using Gemma token IDs (`PAD = 0L`, `EOS = 1L`, fixed length 64).
 3. **Inference**: Pass image and text tensors into `OrtSession.run()`, extracting cosine similarity logits from multi-precision output heads.
-4. **Verification**: If similarity score exceeds calibrated threshold, verify task completion; otherwise evaluate calibrated fallback.
+4. **Calibrated Thresholds & Negative Baseline Gating**:
+   - Compare positive prompt score against calibrated absolute thresholds:
+     - Sigmoid Logit Threshold: `0.05f`
+     - Cosine Similarity Threshold: `0.16f`
+   - Evaluate against negative baseline distractors (`"this is a blurry, dark, or irrelevant photo."`, `"this is a photo of a blank wall, floor, or empty background."`).
+   - Require positive prompt score to exceed the highest negative baseline score by a strict margin (`NEGATIVE_MARGIN_LOGIT = 0.25f` or `NEGATIVE_MARGIN_COSINE = 0.015f`) to eliminate false positives on dark, blurry, or blank camera captures.
+5. **Verification**: If positive score clears both the absolute threshold and negative baseline margin, verify task completion; otherwise return descriptive feedback.
 
 ---
 
@@ -119,6 +125,12 @@ android {
 ### 4. Gemma Tokenization Specifications
 - **Token ID Constants**: Configure `PAD = 0L`, `EOS = 1L`, and fixed sequence length `maxLength = 64`.
 - **Never Concatenate Raw EOS Strings**: Do NOT append literal `" </s>"` strings to input text prior to tokenization. SentencePiece treats appended text as literal characters rather than the special control token. Instead, tokenize raw text and insert `EOS` programmatically at the end of the token ID sequence before padding with `PAD`.
+
+### 5. Pure-Kotlin SentencePiece Fallback (Zero-Native Resilience)
+When the native shared library (`libsentencepiece_jni.so`) is unavailable (e.g. unsupported CPU architectures, ABI stripping, or dynamic link errors), fall back to a pure-Kotlin binary protobuf parser and Unigram Viterbi tokenizer:
+- **Zero-Dependency Protobuf Parser**: Read SentencePiece `.model` binary protobuf directly by parsing varints and field tags (wire types 0, 2, 5) to extract piece strings and log-probability scores without requiring the full `protobuf-javalite` runtime.
+- **Unigram Viterbi DP Segmentation**: Implement dynamic programming with memoization to find the optimal segment partitioning maximizing unigram log probabilities.
+- **Automatic Fallback Wrapper**: `SentencePieceProcessor` attempts to load the native JNI library first; upon `UnsatisfiedLinkError` or JNI load failure, it transparently instantiates `KotlinSentencePieceModel` so tokenization always succeeds.
 
 ---
 
@@ -303,6 +315,12 @@ val resultOutput = try {
 }
 ```
 
+### 3. Thread-Safe Model Session Caching
+Creating an `OrtSession` for multi-hundred-megabyte models incurs significant disk I/O, native graph allocation, and memory overhead (500ms - 2s).
+- **Session Caching Pattern**: Cache the loaded `OrtSession` and track its canonical path (`loadedModelFilePath == modelFile.canonicalPath`).
+- **Mutex Guard**: Synchronize session initialization and inference using a coroutine `Mutex` (`sessionLock.withLock`) to prevent concurrent coroutines from creating duplicate ONNX sessions or destroying an active session mid-inference.
+- **Model Invalidation**: If the user switches models in settings, safely close the active session and instantiate the new model.
+
 ---
 
 ## 7. Resilient Large Model Download Engine
@@ -338,6 +356,32 @@ When resuming interrupted model downloads using HTTP `Range: bytes=downloadedByt
   )
   ```
 - Reconcile stale SharedPreferences flags against live `WorkManager.getWorkInfosForUniqueWorkLiveData` on application startup to prevent permanent UI lockouts.
+
+### 4. HTTP Redirect Handling (301 / 302 / 307 / 308)
+Model hosting mirrors and CDNs (such as Hugging Face and GitHub Releases) frequently issue 302 or 307 redirects to temporary presigned cloud storage URLs.
+- Configure `OkHttpClient` with explicit redirect support:
+  ```kotlin
+  val client = OkHttpClient.Builder()
+      .followRedirects(true)
+      .followSslRedirects(true)
+      .connectTimeout(30, TimeUnit.SECONDS)
+      .readTimeout(60, TimeUnit.SECONDS)
+      .build()
+  ```
+
+### 5. Concurrency Guard on Download Completion
+When multiple download workers execute or finish in close proximity, a worker completing or failing must not clear the `"downloading"` flag of a different model.
+- Always verify the active downloading model ID in SharedPreferences before clearing state:
+  ```kotlin
+  val currentDownloading = prefs.getString("downloading", null)
+  if (currentDownloading == null || currentDownloading == modelId) {
+      prefs.edit().remove("downloading").apply()
+  }
+  ```
+
+### 6. Race-Safe Foreground Notification Initialization
+If network data chunks arrive before the initial foreground notification builder finishes constructing, `updateProgressNotification()` may encounter an uninitialized notification builder.
+- Ensure foreground notification builders lazily initialize or invoke `createForegroundInfo()` on first update to prevent null reference crashes.
 
 ---
 

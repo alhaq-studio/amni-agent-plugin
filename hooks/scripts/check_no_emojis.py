@@ -15,7 +15,8 @@ BINARY_EXTENSIONS = {
     ".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico",
     ".onnx", ".tflite", ".bin", ".model", ".so", ".dll", ".dylib",
     ".jar", ".aar", ".aab", ".apk", ".zip", ".tar", ".gz",
-    ".keystore", ".jks", ".p12", ".class", ".pyc"
+    ".keystore", ".jks", ".p12", ".class", ".pyc",
+    ".ttf", ".otf", ".woff", ".woff2", ".mp3", ".wav", ".ogg", ".flac", ".m4a", ".mp4"
 }
 
 IGNORED_DIRS = {
@@ -68,7 +69,8 @@ def check_single_file(file_path: str) -> List[Tuple[str, int, str, str, str]]:
     if not os.path.isfile(file_path):
         return []
 
-    _, ext = os.path.splitext(file_path.lower())
+    cleaned_path = file_path.rstrip("~").lower()
+    _, ext = os.path.splitext(cleaned_path)
     if ext in BINARY_EXTENSIONS:
         return []
 

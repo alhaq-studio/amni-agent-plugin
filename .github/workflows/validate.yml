@@ -30,3 +30,4 @@ jobs:
         run: |
           python -c "import json; [json.load(open(f)) for f in ['plugin.json', 'mcp_config.json', 'hooks.json', '.claude-plugin/plugin.json', '.claude-plugin/mcp.json', '.claude-plugin/hooks.json']]"
           echo "[OK] All manifest JSON files are valid"
+

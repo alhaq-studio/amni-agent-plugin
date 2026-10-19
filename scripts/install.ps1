@@ -66,3 +66,4 @@ if (Test-Path -Path $PluginsConfig) {
 
 Write-Host "[OK] Amni Ecosystem Plugin successfully installed and synchronized."
 Write-Host "[INFO] Location: $PluginDir"
+

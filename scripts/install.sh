@@ -45,3 +45,4 @@ fi
 
 echo "[OK] Amni Ecosystem Plugin successfully installed and synchronized."
 echo "[INFO] Location: ${PLUGIN_DIR}"
+

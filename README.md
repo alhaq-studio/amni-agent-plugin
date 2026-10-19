@@ -151,3 +151,4 @@ python hooks/scripts/verify_flavor_sources.py --stop-check
 ## 7. License
 
 Licensed under the [Apache License, Version 2.0](LICENSE). Copyright 2026 Alhaq Studio (alhaq.uk).
+
