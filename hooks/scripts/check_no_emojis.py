@@ -21,7 +21,7 @@ BINARY_EXTENSIONS = {
 
 IGNORED_DIRS = {
     ".git", ".gradle", ".idea", "build", "node_modules",
-    "__pycache__", ".kotlin", ".gradle_home"
+    "__pycache__", ".kotlin", ".gradle_home", ".cxx", "sentencepiece"
 }
 
 def is_emoji_codepoint(code: int) -> bool:
@@ -158,7 +158,7 @@ def main():
 
     hook_input_data: Optional[Dict[str, Any]] = None
 
-    if hook_mode or check_stdin_has_data():
+    if hook_mode or (not cli_targets and check_stdin_has_data()):
         try:
             raw = sys.stdin.read()
             if raw.strip():

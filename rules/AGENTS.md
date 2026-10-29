@@ -7,9 +7,13 @@ This baseline instruction file is the unified source of truth for the entire **A
 ## 1. Amni Product Family Ecosystem Matrix
 
 ### AmniShield Suite (App, Content & Distraction Blocking)
-1. **`AmniShield-Android`** (`/media/habib/Dev/PROJECTS/AmniShield/AmniShield-Android`):
-   - Kotlin, Jetpack Compose, Material 3, Accessibility Service node inspection, Room DB, Preferences DataStore.
-   - Core Features: App & URL blocker, keyword filter, focus mode ("Block Selected" default), Reels blocker, ECDSA licensing.
+1. **`AmniShield-Android`** (`d:\PROJECTS\Amni\AmniShield-Android` / `/media/habib/Dev/PROJECTS/AmniShield/AmniShield-Android`):
+   - Kotlin, Jetpack Compose, Material 3, Accessibility Service node inspection, synchronized hybrid persistence (`AmniShieldRuleDatabase.kt`, `AmniShieldDataStore.kt`, `SavedPreferencesLoader.kt`), isolated EncryptedSharedPreferences (`SecureKeyStore.kt`).
+   - Presentation: Dual-Host (`MainActivity.kt` 4 XML tabs + `FragmentActivity.kt` 18 sub-screens via `FragmentDestination.kt`) alongside pure-Compose adaptive shell `AmniShieldAdaptiveApp.kt` mounted via `mountAdaptiveComposeShell()`.
+   - Blocker Pipeline Priority: P0: `AntiUninstallDetector` -> P1: `FocusModeBlocker` -> P2: `WebsiteBlockerDetector` -> P3: `AppBlocker` -> P4: `KeywordBlocker` & `ReelBlocker` (`Channel.CONFLATED` on `Dispatchers.Default`).
+   - Current Version: `0.3.5 (2026.10.21)` / `versionCode 145` (Milestones 0.3.2, 0.3.3, 0.3.4 & 0.3.5 completed; Active Milestone: `v0.3.6` / `v1.0`).
+   - Core Features: App & URL blocker, keyword filter, focus mode ("Block Selected" default), Reels blocker, ECDSA licensing, diagnostic CrashLogger.
+   - Scope Boundaries: Screen visual blur/censoring belongs to `AmniBlur`; VPN DNS packet sinkhole belongs to `AmniGuardFirewall`.
 2. **`AmniShield-Windows`** (`/media/habib/Dev/PROJECTS/AmniShield/AmniShield-Windows`):
    - Flutter, Dart, Windows Desktop API, SQLite.
    - Core Features: Desktop focus utility, process monitor, hosts-file URL filter.
