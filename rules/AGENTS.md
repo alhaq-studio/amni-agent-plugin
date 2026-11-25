@@ -11,7 +11,7 @@ This baseline instruction file is the unified source of truth for the entire **A
    - Kotlin, Jetpack Compose, Material 3, Accessibility Service node inspection, synchronized hybrid persistence (`AmniShieldRuleDatabase.kt`, `AmniShieldDataStore.kt`, `SavedPreferencesLoader.kt`), isolated EncryptedSharedPreferences (`SecureKeyStore.kt`).
    - Presentation: Dual-Host (`MainActivity.kt` 4 XML tabs + `FragmentActivity.kt` 18 sub-screens via `FragmentDestination.kt`) alongside pure-Compose adaptive shell `AmniShieldAdaptiveApp.kt` mounted via `mountAdaptiveComposeShell()`.
    - Blocker Pipeline Priority: P0: `AntiUninstallDetector` -> P1: `FocusModeBlocker` -> P2: `WebsiteBlockerDetector` -> P3: `AppBlocker` -> P4: `KeywordBlocker` & `ReelBlocker` (`Channel.CONFLATED` on `Dispatchers.Default`).
-   - Current Version: `0.3.5 (2026.10.21)` / `versionCode 145` (Milestones 0.3.2, 0.3.3, 0.3.4 & 0.3.5 completed; Active Milestone: `v0.3.6` / `v1.0`).
+   - Current Version: `0.4.0 (2026.11.25)` / `versionCode 146` (Milestones 0.3.2–0.3.5 + Unified Blocks Manager, Always-On Shields, `DomainBlocklistEngine` offline 64-bit FNV-1a domain matching, and Universal-only GitHub Releases; Active Milestone: `v1.0` Play Store Launch).
    - Core Features: App & URL blocker, keyword filter, focus mode ("Block Selected" default), Reels blocker, ECDSA licensing, diagnostic CrashLogger.
    - Scope Boundaries: Screen visual blur/censoring belongs to `AmniBlur`; VPN DNS packet sinkhole belongs to `AmniGuardFirewall`.
 2. **`AmniShield-Windows`** (`/media/habib/Dev/PROJECTS/AmniShield/AmniShield-Windows`):
